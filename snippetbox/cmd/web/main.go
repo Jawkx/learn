@@ -23,12 +23,17 @@ type application struct {
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
+	devOption      *models.DevOption
 }
 
 func main() {
 	port := flag.Int("port", 1234, "HTTP network address")
 	dsn := flag.String("dsn", "web:pw@/snippetbox?parseTime=true", "SQL data source name ")
+	username := flag.String("username", "", "SQL data source name ")
+	password := flag.String("password", "", "SQL data source name ")
+
 	flag.Parse()
+
 	addr := ":" + strconv.Itoa(*port)
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -60,6 +65,11 @@ func main() {
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
+	}
+
+	isDevServer := *username != "" && *password != ""
+	if isDevServer {
+		app.devOption = &models.DevOption{UserName: *username, Password: *password}
 	}
 
 	logger.Info("starting server", "addr", addr)

@@ -26,5 +26,9 @@ func (app *application) routes() http.Handler {
 
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
+	if app.devOption != nil {
+		standard = standard.Append(app.basicAuth)
+	}
+
 	return standard.Then(router)
 }
