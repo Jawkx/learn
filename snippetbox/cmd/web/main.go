@@ -67,6 +67,12 @@ func main() {
 		sessionManager: sessionManager,
 	}
 
+	srv := &http.Server{
+		Addr:     addr,
+		Handler:  app.routes(),
+		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
+	}
+
 	isDevServer := *username != "" && *password != ""
 	if isDevServer {
 		app.devOption = &models.DevOption{UserName: *username, Password: *password}
@@ -74,7 +80,7 @@ func main() {
 
 	logger.Info("starting server", "addr", addr)
 
-	err = http.ListenAndServe(addr, app.routes())
+	err = srv.ListenAndServe()
 	logger.Error(err.Error())
 	os.Exit(1)
 }
