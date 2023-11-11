@@ -24,6 +24,13 @@
         {{end}}
     </div>
     <div>
+        <label>Confirm password:</label>
+        <input type='password' name='confirm-password'>
+        {{with .Form.FieldErrors.confirmPassword}}
+            <label class='error'>{{.}}</label>
+        {{end}}
+    </div>
+    <div>
         <input type='submit' value='Signup'>
     </div>
 </form>

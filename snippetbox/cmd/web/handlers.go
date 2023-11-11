@@ -96,7 +96,6 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	}
 
 	app.sessionManager.Put(r.Context(), "flash", "Snippet successfully created!")
-
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }
 
@@ -104,6 +103,7 @@ type userSignupForm struct {
 	Name                string `form:"name"`
 	Email               string `form:"email"`
 	Password            string `form:"password"`
+	ConfirmPassword     string `form:"confirm-password"`
 	validator.Validator `form:"-"`
 }
 
@@ -127,6 +127,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "This is not a valid email")
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
 	form.CheckField(validator.MinChars(form.Password, 8), "password", "Password must be longer than 6 character")
+	form.CheckField(validator.CheckEqual(form.Password, form.ConfirmPassword), "confirmPassword", "Confirm password must match password")
 
 	if !form.Valid() {
 		data := app.newTemplateData(r)
